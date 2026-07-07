@@ -1,0 +1,52 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: blue;
+}
+
+.contenitore{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cella{
+    height: 50px;
+    width: 50px;
+}
+
+.cellaNave{
+    border: 2px aqua solid;
+}
+
+#grigliaGioco{
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+}
+
+#grigliaBarche{
+    gap: 50px;
+}
+
+#tipiBarche{
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    gap: 5px;
+}
+
+#nomi{
+    flex-direction: column;
+    align-items: end;
+    gap: 30px;
+}
+
+.colpita{
+    background-color: red;
+}
+
+.acqua{
+    background-color: darkblue;
+}
