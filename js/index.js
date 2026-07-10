@@ -1,21 +1,23 @@
-const giocoHtml = document.getElementById("grigliaGioco");
-const tipiBarcheHtml = document.getElementById("tipiBarche");
+const messaggioHtml = document.getElementById("messaggio");
+let secondi = 0;
+let timer;
+let vittoria = false;
 let gioco = [];
-let tipiBarche = [1, 1, 1, 1, 0, 0, 0, 0, 
-    1, 1, 1, 0, 1, 1, 1, 0, 
-    1, 1, 0, 1, 1, 0, 1, 1,
-    1, 0, 1, 0, 1, 0, 1, 0
+let tipiBarche = [1, 1, 1, 1, 0, 0, 0, 0, 0, 
+    1, 1, 1, 0, 1, 1, 1, 0, 0,
+    1, 1, 0, 1, 1, 0, 1, 1, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 0
 ];
 let lunghezzaBarche = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
+let numeroBombe = 0;
 
+inizializza();
 
 function inizializza(){
     inizializzaGioco();
     inizializzaBarche();
     posizionaBarche();
 }
-
-inizializza();
 
 function inizializzaGioco(){
     for (let i = 0; i < 10; i++)
@@ -31,13 +33,13 @@ function inizializzaGioco(){
                 sparaBomba(cella);
             });
             gioco[i][j] = -1;
-            giocoHtml.append(cella);
+            document.getElementById("grigliaGioco").append(cella);
         }
     }
 }
 
 function inizializzaBarche(){
-    for (let i = 0; i < 32; i++)
+    for (let i = 0; i < 36; i++)
     {
         let cella = document.createElement("div");
         cella.classList.add("cella");
@@ -46,7 +48,7 @@ function inizializzaBarche(){
             cella.classList.add("cellaNave")
         }
         cella.id = `cellaEsempio${i}`;
-        tipiBarcheHtml.append(cella);
+        document.getElementById("tipiBarche").append(cella);
     }
 }
 
@@ -85,12 +87,10 @@ function posizionaBarche(){
                 if (direzione)
                 {
                     gioco[x][y + j] = i;
-                    // document.getElementById(`cella${x}${y + j}`).classList.add("colpita");
                 }
                 else
                 {
                     gioco[x + j][y] = i;
-                    // document.getElementById(`cella${x + j}${y}`).classList.add("acqua");
                 }
             }
             i++;
@@ -101,10 +101,130 @@ function posizionaBarche(){
 }
 
 function sparaBomba(cella){
-    x = cella.id[5];
-    y = cella.id[6];
-    if (gioco[x][y] == -1)
+    const numeroBombeHtml = document.getElementById("numeroBombe");
+    if (numeroBombe == 0)
     {
-        cella.classList.add("acqua");
+        avviaTimer();
     }
+    if (!vittoria)
+    {
+        x = cella.id[5];
+        y = cella.id[6];
+        if (gioco[x][y] == -1)
+        {
+            numeroBombe++;
+            numeroBombeHtml.textContent = `Bombe sparat: ${numeroBombe}`;
+            cella.classList.add("acqua");
+            messaggioHtml.textContent = "Acqua!";
+            messaggioHtml.style.color = "darkblue";
+            gioco[x][y] = -2;
+        }
+        else if (gioco[x][y] != -2)
+        {
+            numeroBombe++;
+            numeroBombeHtml.textContent = `Bombe sparat: ${numeroBombe}`;
+            cella.classList.add("colpita");
+            messaggioHtml.textContent = "Colpita!";
+            messaggioHtml.style.color = "red";
+            
+            let barca = gioco[x][y];
+            lunghezzaBarche[barca]--;
+    
+            if (lunghezzaBarche[barca] == 0)
+            {
+                messaggioHtml.textContent = "Colpita e Affondata!";
+                messaggioHtml.style.color = "black";
+           
+                let posizionaBarcaAffondata = 0;
+                let i = 0;
+                while(posizionaBarcaAffondata != barca && i < 35)
+                {
+                    if (tipiBarche[i] == 0 && tipiBarche[i + 1] == 1)
+                    {
+                        posizionaBarcaAffondata++;
+                    }
+                    i++;
+                }
+    
+                while(tipiBarche[i] == 1)
+                {
+                    document.getElementById(`cellaEsempio${i}`).classList.add("colpita");
+                    i++;
+                }
+    
+                controllaVittoria();
+            }
+    
+            gioco[x][y] = -2;
+        }   
+    }
+}
+
+function controllaVittoria(){
+    let i = 0;
+    vittoria = true;
+    while (i < 10 && vittoria)
+    {
+        if (lunghezzaBarche[i] != 0)
+        {
+            vittoria = false;
+        }
+        i++;
+    }
+
+    if (vittoria)
+    {
+        messaggioHtml.textContent = "HAI AFFONDATO TUTTE LE NAVI!!!";
+        messaggioHtml.style.color = "gold";
+        messaggioHtml.style.fontSize = "40pt";
+        document.getElementById("rigioca").style.display = "block";
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("punteggio").textContent = `il tuo punteggio è: ${1000 - numeroBombe * 7 - secondi * 2}`;
+    }
+}
+
+function nuovaPartita(){
+    location.reload();
+}
+
+function avviaTimer(){
+    timer = setInterval(() => {
+        secondi++;
+        let stringaTempo = "";
+        let copiaSecondi = secondi;
+
+        let ore = Math.floor(copiaSecondi / 3600);
+        if (ore < 10)
+        {
+            stringaTempo += "0" + ore + " : ";
+        }
+        else
+        {
+            stringaTempo += ore + " : ";
+        }  
+        copiaSecondi -= Math.floor(copiaSecondi / 3600) * 3600;
+        
+        let minuti = Math.floor(copiaSecondi / 60);
+        if (minuti < 10)
+        {
+            stringaTempo += "0" + minuti + " : ";
+        }
+        else
+        {
+            stringaTempo += minuti + " : ";
+        }
+        copiaSecondi -= Math.floor(copiaSecondi / 60) * 60;
+
+        if (copiaSecondi < 10)
+        {
+            stringaTempo += "0" + copiaSecondi;
+        }
+        else
+        {
+            stringaTempo += copiaSecondi;
+        }
+        
+        document.getElementById("timer").textContent = stringaTempo;
+    }, 1000);
 }

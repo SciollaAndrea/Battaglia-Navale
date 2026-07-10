@@ -4,6 +4,7 @@
 }
 
 body{
+    margin-top: 50px;
     background-color: blue;
 }
 
@@ -33,7 +34,7 @@ body{
 
 #tipiBarche{
     display: grid;
-    grid-template-columns: repeat(8, 50px);
+    grid-template-columns: repeat(9, 50px);
     gap: 5px;
 }
 
@@ -43,10 +44,36 @@ body{
     gap: 30px;
 }
 
+#scritte{
+    gap: 20px;
+    flex-direction: column;
+    margin: 20px;
+}
+
 .colpita{
     background-color: red;
 }
 
 .acqua{
     background-color: darkblue;
+}
+
+#rigioca{
+    font-size: 20pt;
+    padding: 20px;
+    background-color: darkblue;
+    color: gold;
+    border: gold 7px solid;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: none;
+}
+
+#rigioca:hover{
+    transform: scale(1.2);
+}
+
+#rigioca:active{
+    transform: scale(0.8);
 }
